@@ -1,32 +1,46 @@
 # Código base para iniciar
 def cargar_buffer(entrada, inicio, tamano_buffer):
-  buffer = entrada[inicio:inicio + tamano_buffer]
-  if len(buffer) < tamano_buffer:
-    buffer.append("eof")
-  return buffer
+    buffer = entrada[inicio:inicio + tamano_buffer]
+    if len(buffer) < tamano_buffer and "eof" not in buffer:
+        buffer.append("eof")
+    return buffer
 
-def procesar_buffer(buffer):
-    print("Buffer inicial:", buffer)
+def procesar_buffer(entrada, tamano_buffer):
+    inicio_global = 0
+    lexema_incompleto = ""  
 
-    lexema = []
-    inicio = 0  
-    avance = 0  
+    while True:
+        buffer = cargar_buffer(entrada, inicio_global, tamano_buffer)
+        print("Buffer inicial:", buffer)
 
-    while inicio < len(buffer):
-        
-        while avance < len(buffer) and buffer[avance] not in [" ", ""]:
-            avance += 1
+        inicio = 0
+        avance = 0
 
-        if avance > inicio:
-            lexema.append("".join(buffer[inicio:avance]))  
+        while avance < len(buffer):
+            while avance < len(buffer) and buffer[avance] == " ":
+                avance += 1
+            inicio = avance
 
-        avance += 1  
-        inicio = avance  
+            while avance < len(buffer) and buffer[avance] not in [" ", "eof"]:
+                avance += 1
 
-    print(lexema)
+            if avance > inicio:
+                lexema = "".join(buffer[inicio:avance])
+                lexema_incompleto += lexema  
 
-entrada = list("Esto es un ejemplo eof")
-inicio = 0
+                if avance < len(buffer) or "eof" in buffer:
+                    print(f"Lexema procesado: {lexema_incompleto}")
+                    lexema_incompleto = ""  
+
+            avance += 1  
+            inicio = avance  
+
+        if "eof" in buffer:
+            break
+
+        inicio_global += tamano_buffer
+
+entrada = list("Esto es un ejemplo de entrada con eof")
 tamano_buffer = 10
-buffer = cargar_buffer(entrada, inicio, tamano_buffer)
-procesar_buffer(buffer)
+
+procesar_buffer(entrada, tamano_buffer)
