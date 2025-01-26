@@ -1,0 +1,1 @@
+# Impl_buffer_entrada
